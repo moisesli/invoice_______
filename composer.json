@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Config\\": "./config"
+        }
+    },
+    "require": {
+        "izniburak/router": "^2.5",
+        "simplehtmldom/simplehtmldom": "dev-master"
+    }
+}
