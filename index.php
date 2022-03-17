@@ -22,9 +22,14 @@ $router->get('/', function(Request $request, Response $response) {
     return $response;
 });
 
-$router->get('/login',function (){
-    include './views/auth/index.php';
+$router->get('/login', function (){
+    include './views/auth/login.php';
 });
+
+$router->get('/registro', function (){
+    include './views/auth/registro.php';
+});
+
 $router->get('/radiouno','RadiounoController@index');
 
 // For basic GET URI by using a Controller class.
