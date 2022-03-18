@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://demo.themesberg.com/windster/app.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://unpkg.com/vue@next"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -43,16 +44,16 @@
               <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-4 w-4 rounded">
             </div>
             <div class="text-sm ml-3">
-              <label for="re2member" class="font-medium text-gray-900">I accept the
-                <a href="#" class="text-teal-500 hover:underline">Terms and Conditions</a>
+              <label for="re2member" class="font-medium text-gray-900">Aceptar
+                <a href="#" class="text-teal-500 hover:underline">Los terminos y condiciones</a>
               </label>
             </div>
           </div>
-          <button_ type="cyan" @click="enviar">Create account</button_>
+          <button_ type="cyan" @click="sendRegistro">Crear Cuenta</button_>
           <div class="text-sm font-medium text-gray-500">
-            Already have an account?
+            Ya tienes una cuenta?
             <a href="https://demo.themesberg.com/windster/authentication/sign-in/"
-               class="text-teal-500 hover:underline">Login here</a>
+               class="text-teal-500 hover:underline">Entra Aqui</a>
           </div>
         </form>
       </div>
@@ -66,14 +67,16 @@
       return {
         message: 'salio',
         item: {
-          email: '',
-          password: ''
+          email: 'elnaufrago2009@gmail.com',
+          password: 'moiseslinar3s'
         }
       }
     },
     methods: {
-      enviar: function (){
-        console.log(this.item);
+      sendRegistro: function (){
+        axios.post('./api/registro', JSON.stringify(this.item)).then(res => {
+          console.log(res.data);
+        })
       }
     }
   });

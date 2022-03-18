@@ -26,9 +26,13 @@ $router->get('/login', function (){
     include './views/auth/login.php';
 });
 
+
+$router->post('/api/registro','AuthController@index');
 $router->get('/registro', function (){
     include './views/auth/registro.php';
 });
+
+
 
 $router->get('/radiouno','RadiounoController@index');
 
