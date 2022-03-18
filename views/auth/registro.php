@@ -25,27 +25,22 @@
         <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">
           Create una Cuenta
         </h2>
-        <form class="mt-8 space-y-6" action="#">
+        <form class="mt-8 space-y-6">
           <div>
-            <label for="email" class="text-sm font-medium text-gray-900 block mb-2">Your email</label>
-            <inputform type="email" v-model="item.email" placeholder="elnaufrago2009@gmail.com"></inputform>
+            <label_>Tu correo</label_>
+            <input_ type="email" v-model="item.email" placeholder="elnaufrago2009@gmail.com"></input_>
           </div>
           <div>
-            <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Your password</label>
-            <input type="password" name="password" id="password" placeholder="••••••••"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                   required>
+            <label_>Contraseña</label_>
+            <input_ type="password" v-model="item.password" placeholder="••••••••"/>
           </div>
           <div>
-            <label for="confirm-password" class="text-sm font-medium text-gray-900 block mb-2">Confirm password</label>
-            <input type="password" name="confirm-password" id="confirm-password" placeholder="••••••••"
-                   class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                   required>
+            <label_>Confirmar Contraseña</label_>
+            <input_ type="password"  placeholder="••••••••"></input_>
           </div>
-          <inputform></inputform>
           <div class="flex items-start">
             <div class="flex items-center h-5">
-              <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-4 w-4 rounded" required>
+              <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-4 w-4 rounded">
             </div>
             <div class="text-sm ml-3">
               <label for="re2member" class="font-medium text-gray-900">I accept the
@@ -53,12 +48,11 @@
               </label>
             </div>
           </div>
-          <button type="submit" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center">
-            Create account
-          </button>
+          <button_ type="cyan" @click="enviar">Create account</button_>
           <div class="text-sm font-medium text-gray-500">
             Already have an account?
-            <a href="https://demo.themesberg.com/windster/authentication/sign-in/" class="text-teal-500 hover:underline">Login here</a>
+            <a href="https://demo.themesberg.com/windster/authentication/sign-in/"
+               class="text-teal-500 hover:underline">Login here</a>
           </div>
         </form>
       </div>
@@ -72,21 +66,39 @@
       return {
         message: 'salio',
         item: {
-          email: ''
+          email: '',
+          password: ''
         }
       }
     },
-    methods: {}
+    methods: {
+      enviar: function (){
+        console.log(this.item);
+      }
+    }
   });
 
-  app.component('inputform',{
-    template: `
-      <input :type="type" :value="modelValue" @change="$emit('update:modelValue', $event.target.value)" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" :placeholder="placeholder" />
-    `,
+  app.component('input_', {
+    template: `<input :type="type" :value="modelValue" @change="$emit('update:modelValue', $event.target.value)" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" :placeholder="placeholder" />`,
     props: {
       type: String,
       placeholder: String,
       modelValue: String
+    }
+  });
+  app.component('label_', {
+    template: `<label class="text-sm font-medium text-gray-900 block mb-2"><slot></slot></label>`,
+  });
+
+  app.component('button_', {
+    template: `<button type="button"
+      :class="[
+          this.type == 'cyan' ? 'text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center' : ''
+      ]"
+      :disabled="disabled"><slot></slot></button>`,
+    props: {
+      type: String,
+      disabled: Boolean
     }
   });
   app.mount('#app');
