@@ -11,14 +11,14 @@ class Controller
 
     public $db;
 
-    public function __construct()
+    /*public function __construct()
     {
         try {
             $this->db = new \PDO("mysql:host=localhost;dbname=invoice", "root", "");            
         } catch (PDOException $e) {
             echo "Error al conectarse a la base de datos: " . $e->getMessage();
         }
-    }
+    }*/
     public function resjson($data = [], $status = 200, array $headers = [], $options = 0){
         header("HTTP/1.1");
         header("Content-Type:application/json");

@@ -1,10 +1,11 @@
 <?php
 
 namespace Controllers;
+use Config\Controller;
 use simplehtmldom\HtmlWeb;
 
 
-class RadiounoController
+class RadiounoController extends Controller
 {
     public function index()
     {
@@ -22,6 +23,7 @@ class RadiounoController
         $playlist = $playlist[1];
         $playlist = explode(';"',$playlist);
         $playlist = $playlist[0].';';
-        return $playlist;
+        //return $playlist;
+        return $this->resjson(["url" => $playlist], 201);
     }
 }

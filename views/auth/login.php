@@ -66,10 +66,10 @@
     },
     methods: {
       sendItem: function () {
-        console.log(this.item)
-        /*axios.post('./api/login', JSON.stringify(this.item)).then(res => {
+        //console.log(this.item)
+        axios.post('./api/login', JSON.stringify(this.item)).then(res => {
           console.log(res.data);
-        })*/
+        })
       }
     }
   });

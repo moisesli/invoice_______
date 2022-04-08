@@ -22,9 +22,13 @@ $router->get('/', function(Request $request, Response $response) {
     return $response;
 });
 
+
+// Login
 $router->get('/login', function (){
     include './views/auth/login.php';
 });
+$router->post('/api/login', 'AuthController@login');
+
 
 
 $router->post('/api/registro','AuthController@index');
