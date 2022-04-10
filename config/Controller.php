@@ -2,15 +2,11 @@
 
 namespace Config;
 
-use PDOException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class Controller
 {
-
-    public $db;
-
     /*public function __construct()
     {
         try {
