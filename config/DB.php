@@ -53,7 +53,12 @@ class DB
    */
   public function __construct($host, $user, $pass, $db)
   {
-    $this->_pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+    $options = array(
+      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+      PDO::MYSQL_ATTR_SSL_CA => 'C:\Users\Moises\Downloads\cert.pem',
+      PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+    );
+    $this->_pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass, $options);
   }
 
   /**

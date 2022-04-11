@@ -3,9 +3,7 @@
 namespace Controllers;
 use Config\DB;
 use Config\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
- 
+
 class AuthController extends Controller
 {
 
@@ -14,17 +12,13 @@ class AuthController extends Controller
     return 'registro';
   }
 
-  public function login(Request $request, Response $response){
-    $db = new DB('localhost', 'root', '', 'invoice');
+  public function login(){
+    $db = new DB('05cr8wjw5112.us-east-1.psdb.cloud', 'vpjfb2ewapce', 'pscale_pw_TZEawdCs7uZZc4OcMBJDVTQ7gdyy9ZHlZRqwCVEbc1U', 'invoice');
 
     //$db->insert('usuarios', ['nombres' => 'linares']);
 
-    $q = $db->select('usuarios',
-      [
-        'usuario', '=', 'elnaufrago2009@gmail.com',
-        'password', '=', 'moiseslinar3s'
-      ]);
-    print_r($db->all());
+    $q = $db->select('roles',['id', '=', '1']);
+    print_r($q->all());
     /*if ($db->error() && $db->count() > 0) {
       foreach ($q->all() as $obj){
         echo "Value of index1: {$obj->nombres}<br>";
@@ -32,7 +26,7 @@ class AuthController extends Controller
       }
     }*/
 
-    $data = $request->toArray();
+    //$data = $request->toArray();
     //return $this->resjson($data);
   }
 }
