@@ -15,6 +15,14 @@ class AuthController extends Controller
 
   public function login()
   {
+    /*header('Access-Control-Allow-Origin: *');
+    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+    header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+    $method = $_SERVER['REQUEST_METHOD'];
+    if($method == "OPTIONS") {
+      die();
+    }*/
 
     $db = new DB('05cr8wjw5112.us-east-1.psdb.cloud', 'vpjfb2ewapce', 'pscale_pw_TZEawdCs7uZZc4OcMBJDVTQ7gdyy9ZHlZRqwCVEbc1U', 'invoice');
 
@@ -22,9 +30,10 @@ class AuthController extends Controller
       'usuario' => 'elnaufrago2009@gmail.com',
       'password' => 'moiseslinar3s'
     ]);
+    print_r($q->all());
 
-    if ($q->count() == 1) {
-      $global = $db->query('select 
+    //if ($q->count() == 1) {
+      /*$global = $db->query('select
         usuarios.nombres as usuario_nombres,
         usuarios.usuario as usuario_usuario,        
         roles.id as role_id,
@@ -40,8 +49,8 @@ class AuthController extends Controller
         where usuario = ? && password = ? ', [
         'usuario' => 'elnaufrago2009@gmail.com',
         'password' => 'moiseslinar3s'
-      ]);
-      session_start();
+      ]);*/
+      /*session_start();
       $_SESSION["usuario_nombres"] = $global->first()->usuario_nombres;
       $_SESSION["usuario_usuario"] = $global->first()->usuario_usuario;
       $_SESSION["role_id"] = $global->first()->role_id;
@@ -50,10 +59,10 @@ class AuthController extends Controller
       $_SESSION["empresa_razon_social"] = $global->first()->empresa_razon_social;
       $_SESSION["empresa_ruc"] = $global->first()->empresa_ruc;
       $_SESSION["empresa_direccion"] = $global->first()->empresa_direccion;
-      $_SESSION["empresa_ubigeo"] = $global->first()->empresa_ubigeo;
-      return $global->first()->usuario_nombres;      
-      exit();
-    }
+      $_SESSION["empresa_ubigeo"] = $global->first()->empresa_ubigeo;*/
+      //echo $global->first()->usuario_nombres;
+      //exit();
+    //}
 
   }
 }

@@ -25,7 +25,7 @@ $router->get('/', function(Request $request, Response $response) {
 
 // Login
 $router->get('/login', function (){ include './views/auth/login.php'; });
-$router->post('/api/login', 'AuthController@login');
+$router->get('/api/login', 'AuthController@login');
 
 // Registro
 $router->post('/api/registro','AuthController@index');
