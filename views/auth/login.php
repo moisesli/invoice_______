@@ -5,9 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login de usuario</title>
-  <!--  <link rel="stylesheet" href="https://www.unpkg.com/tailwindcss@2.2.19/dist/tailwind.css">-->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://unpkg.com/vue@next"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -44,7 +42,7 @@
             </div>
             <a href="#" class="text-base text-teal-600 hover:underline ml-auto">Olvidaste tu Contrasenia?</a>
           </div>
-          <button_ color="cyan" @click="sendItem"><i class="fas fa-lock"></i> Iniciar Session</button_>
+          <button_ color="cyan" @click="sendItem">Iniciar Session</button_>
           <!--<div class="text-sm font-medium text-gray-500">
             Not registered? <a href="https://demo.themesberg.com/windster/authentication/sign-up/" class="text-teal-500 hover:underline">Create account</a>
           </div>-->

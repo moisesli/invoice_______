@@ -24,18 +24,15 @@ $router->get('/', function(Request $request, Response $response) {
 
 
 // Login
-$router->get('/login', function (){
-    include './views/auth/login.php';
-});
+$router->get('/login', function (){ include './views/auth/login.php'; });
 $router->post('/api/login', 'AuthController@login');
 
-
-
+// Registro
 $router->post('/api/registro','AuthController@index');
-$router->get('/registro', function (){
-    include './views/auth/registro.php';
-});
+$router->get('/registro', function (){ include './views/auth/registro.php'; });
 
+// Documentos
+$router->get('/documentos', function (){ include './views/documentos/index.php'; });
 
 
 $router->get('/radiouno','RadiounoController@index');
