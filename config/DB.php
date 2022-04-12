@@ -84,6 +84,7 @@ class DB
 
     if ($this->_query->execute()) {
       $this->_results = $this->_query->fetchAll(PDO::FETCH_OBJ);
+      //print_r($this->_results);
       $this->_count = $this->_query->rowCount();
     } else {
       $this->_error = true;
