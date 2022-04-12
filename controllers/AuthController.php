@@ -51,7 +51,8 @@ class AuthController extends Controller
       $_SESSION["empresa_ruc"] = $global->first()->empresa_ruc;
       $_SESSION["empresa_direccion"] = $global->first()->empresa_direccion;
       $_SESSION["empresa_ubigeo"] = $global->first()->empresa_ubigeo;
-      return $global->first()->usuario_nombres;
+      return $global->first()->usuario_nombres;      
+      exit();
     }
 
   }
