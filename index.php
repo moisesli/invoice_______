@@ -10,9 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 $router = new \Buki\Router\Router([
     'paths' => [
         'controllers' => __DIR__ . '/controllers',
+        'middlewares' => '/middlewares'
     ],
     'namespaces' => [
         'controllers' => 'Controllers',
+        'middlewares' => 'App\Middlewares'
     ],
 ]);
 
