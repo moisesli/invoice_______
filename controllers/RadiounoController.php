@@ -23,7 +23,11 @@ class RadiounoController extends Controller
         $playlist = $playlist[1];
         $playlist = explode(';"',$playlist);
         $playlist = $playlist[0].';';
-        //return $playlist;
-        return $this->resjson(["url" => $playlist], 201);
+        header("HTTP/1.1");
+        header("Content-Type:application/json");
+        echo json_encode(["url" => $playlist], JSON_PRETTY_PRINT);        
+        exit;
+
+        
     }
 }

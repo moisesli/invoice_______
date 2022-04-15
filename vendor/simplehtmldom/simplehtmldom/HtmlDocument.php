@@ -23,6 +23,7 @@
 
 include_once 'constants.php';
 include_once 'HtmlNode.php';
+include_once 'HtmlElement.php';
 include_once 'Debug.php';
 
 class HtmlDocument
@@ -52,22 +53,8 @@ class HtmlDocument
 	public $default_br_text = '';
 	public $default_span_text = '';
 
-	protected $self_closing_tags = array(
-		'area' => 1,
-		'base' => 1,
-		'br' => 1,
-		'col' => 1,
-		'embed' => 1,
-		'hr' => 1,
-		'img' => 1,
-		'input' => 1,
-		'link' => 1,
-		'meta' => 1,
-		'param' => 1,
-		'source' => 1,
-		'track' => 1,
-		'wbr' => 1
-	);
+	// The end tags of these elements will close any unclosed element with optional end tags it contains.
+	// Example: <table><tr>...</table> - the 'table' element closes the 'tr' element.
 	protected $block_tags = array(
 		'body' => 1,
 		'div' => 1,
@@ -76,6 +63,10 @@ class HtmlDocument
 		'span' => 1,
 		'table' => 1
 	);
+
+	// The key specifies an element for which the closing tag is optional.
+	// The value specifies elements that implicitly close the key element.
+	// Example: <li>...<li>... - the second 'li' element closes the first 'li' element.
 	protected $optional_closing_tags = array(
 		// Not optional, see
 		// https://www.w3.org/TR/html/textlevel-semantics.html#the-b-element
@@ -128,7 +119,7 @@ class HtmlDocument
 		$options = 0)
 	{
 		if ($str) {
-			if (preg_match('/^http:\/\//i', $str) || is_file($str)) {
+			if (preg_match('/^http:\/\//i', $str) || strlen($str) <= PHP_MAXPATHLEN && is_file($str)) {
 				$this->load_file($str);
 			} else {
 				$this->load(
@@ -184,15 +175,15 @@ class HtmlDocument
 		$this->prepare($str, $lowercase, $defaultBRText, $defaultSpanText);
 
 		if ($stripRN) {
-			// Temporarily remove any element that shouldn't loose whitespace
+			// Temporarily remove any element that shouldn't lose whitespace
 			$this->remove_noise("'<\s*script[^>]*>(.*?)<\s*/\s*script\s*>'is");
-			$this->remove_noise("'<!\[CDATA\[(.*?)\]\]>'is");
-			$this->remove_noise("'<!--(?!>|\->)(.*?)-->'is");
+			$this->remove_noise("'<!\[CDATA\[(.*?)]]>'is");
+			$this->remove_noise("'<!--(?!>|->)(.*?)-->'is");
 			$this->remove_noise("'<\s*style[^>]*>(.*?)<\s*/\s*style\s*>'is");
-			$this->remove_noise("'<\s*(?:code)[^>]*>(.*?)<\s*/\s*(?:code)\s*>'is");
+			$this->remove_noise("'<\s*code[^>]*>(.*?)<\s*/\s*code\s*>'is");
 
 			// Remove whitespace and newlines between tags
-			$this->doc = preg_replace('/\>([\t\s]*[\r\n]^[\t\s]*)\</m', '><', $this->doc);
+			$this->doc = preg_replace('/>([\t\s]*[\r\n]^[\t\s]*)</m', '><', $this->doc);
 
 			// Remove whitespace and newlines in text
 			$this->doc = preg_replace('/([\t\s]*[\r\n]^[\t\s]*)/m', ' ', $this->doc);
@@ -209,7 +200,7 @@ class HtmlDocument
 		}
 
 		if($options & HDOM_SMARTY_AS_TEXT) { // Strip Smarty scripts
-			$this->remove_noise("'(\{\w)(.*?)(\})'s", true);
+			$this->remove_noise("'({\w)(.*?)(})'s", true);
 			// phpcs:ignore Generic.Files.LineLength
 			Debug::log('Support for Smarty scripts has been deprecated and will be removed in the next major version of simplehtmldom.');
 		}
@@ -266,7 +257,7 @@ class HtmlDocument
 	{
 		$this->clear();
 
-		$this->doc = trim($str);
+		$this->doc = isset($str) ? trim($str) : '';
 		$this->size = strlen($this->doc);
 		$this->original_size = $this->size; // original size of the html
 		$this->pos = 0;
@@ -362,12 +353,12 @@ class HtmlDocument
 			$el = $this->root->find('meta[http-equiv=Content-Type]', 0, true);
 
 			if (!empty($el)) {
-				$fullvalue = $el->content;
+				$fullValue = $el->content;
 
-				if (!empty($fullvalue)) {
+				if (!empty($fullValue)) {
 					$success = preg_match(
 						'/charset=(.+)/i',
-						$fullvalue,
+						$fullValue,
 						$matches
 					);
 
@@ -429,7 +420,7 @@ class HtmlDocument
 			$charset = 'UTF-8';
 		}
 
-		// Since CP1252 is a superset, if we get one of it's subsets, we want
+		// Since CP1252 is a superset, if we get one of its subsets, we want
 		// it instead.
 		if ((strtolower($charset) == 'iso-8859-1')
 			|| (strtolower($charset) == 'latin1')
@@ -514,7 +505,7 @@ class HtmlDocument
 
 					// No start tag, close parent
 					if (strtolower($this->parent->tag) !== $tag_lower) {
-						$this->parent = $org_parent; // restore origonal parent
+						$this->parent = $org_parent; // restore original parent
 						$this->parent->_[HtmlNode::HDOM_INFO_END] = $this->cursor;
 						return $this->as_text_node($tag);
 					}
@@ -528,7 +519,7 @@ class HtmlDocument
 			}
 
 			// Link with start tag
-			$this->parent->_[HtmlNode::HDOM_INFO_END] = $this->cursor;
+			$this->parent->_[HtmlNode::HDOM_INFO_END] = $this->cursor - 1;
 
 			if ($this->parent->parent) {
 				$this->parent = $this->parent->parent;
@@ -781,7 +772,7 @@ class HtmlDocument
 		// Space after last attribute before closing the tag
 		if (!$trim && $space[0] !== '') {
 			// phpcs:ignore Generic.Files.LineLength
-			Debug::log_once('Source document contains superfluous whitespace before the closing braket (<e attribute="value"     >). Enable trimming or remove spaces before closing brackets for best performance.');
+			Debug::log_once('Source document contains superfluous whitespace before the closing bracket (<e attribute="value"     >). Enable trimming or remove spaces before closing brackets for best performance.');
 			$node->_[HtmlNode::HDOM_INFO_ENDSPACE] = $space[0];
 		}
 
@@ -799,7 +790,7 @@ class HtmlDocument
 				}
 			}
 			$node->_[HtmlNode::HDOM_INFO_END] = 0;
-		} elseif (!isset($this->self_closing_tags[strtolower($node->tag)])) {
+		} elseif (!HtmlElement::isVoidElement($node->tag)) {
 			$innertext = $this->copy_until_char('<');
 			if ($innertext !== '') {
 				$node->_[HtmlNode::HDOM_INFO_INNER] = $innertext;
@@ -807,23 +798,23 @@ class HtmlDocument
 			$this->parent = $node;
 		}
 
-		if ($node->tag === 'br') {
+		if ($node->tag === HtmlElement::BR) {
 			$node->_[HtmlNode::HDOM_INFO_INNER] = $this->default_br_text;
-		} elseif ($node->tag === 'script') {
+		} elseif (HtmlElement::isRawTextElement($node->tag)) {
 			$data = '';
 
-			// There is a rare chance of empty script: "<script></script>"
-			// In which case the current char is the start of the end tag
-			// But the script could also just contain tags: "<script><div></script>"
+			// There is a rare chance of an empty element: "<e></e>",
+			// in which case the current char is the start of the end tag.
+			// But the script could also just contain tags: "<e><t></e>"
 			while(true) {
 				// Copy until first char of end tag
 				$data .= $this->copy_until_char('<');
 
 				// Look ahead in the document, maybe we are at the end
-				if (($this->pos + 9) > $this->size) { // End of document
+				if (($this->pos + strlen("</$node->tag>")) > $this->size) { // End of document
 					Debug::log('Source document ended unexpectedly!');
 					break;
-				} elseif (substr($this->doc, $this->pos, 8) === '</script') { // end
+				} elseif (substr($this->doc, $this->pos, strlen("</$node->tag")) === "</$node->tag") { // end
 					$this->skip('>'); // don't include the end tag
 					break;
 				}
@@ -967,7 +958,7 @@ class HtmlDocument
 		for ($i = $count - 1; $i > -1; --$i) {
 			$key = '___noise___' . sprintf('% 5d', count($this->noise) + 1000);
 
-			$idx = ($remove_tag) ? 0 : 1; // 0 = entire match, 1 = submatch
+			$idx = ($remove_tag) ? 0 : 1; // 0 = entire match, 1 = sub-match
 			$this->noise[$key] = $matches[$i][$idx][0];
 			$this->doc = substr_replace($this->doc, $key, $matches[$i][$idx][1], strlen($matches[$i][$idx][0]));
 		}
@@ -986,7 +977,7 @@ class HtmlDocument
 		$pos = 0;
 		while (($pos = strpos($text, '___noise___', $pos)) !== false) {
 			// Sometimes there is a broken piece of markup, and we don't GET the
-			// pos+11 etc... token which indicates a problem outside of us...
+			// pos+11 etc... token which indicates a problem outside us...
 
 			// todo: "___noise___1000" (or any number with four or more digits)
 			// in the DOM causes an infinite loop which could be utilized by
@@ -1043,9 +1034,8 @@ class HtmlDocument
 	function __get($name)
 	{
 		switch ($name) {
-			case 'outertext':
-				return $this->root->innertext();
 			case 'innertext':
+			case 'outertext':
 				return $this->root->innertext();
 			case 'plaintext':
 				return $this->root->text();
@@ -1124,7 +1114,7 @@ class HtmlDocument
 		$args = func_get_args();
 
 		if(($doc = call_user_func_array('file_get_contents', $args)) !== false) {
-			$this->load($doc, true);
+			$this->load($doc);
 		} else {
 			return false;
 		}

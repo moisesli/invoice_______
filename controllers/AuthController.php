@@ -2,8 +2,10 @@
 
 namespace Controllers;
 
-use Config\DB;
 use Config\Controller;
+use Exception;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -13,27 +15,15 @@ class AuthController extends Controller
     return 'registro';
   }
 
-  public function login()
-  {
-    /*header('Access-Control-Allow-Origin: *');
-    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-    header("Allow: GET, POST, OPTIONS, PUT, DELETE");
-    $method = $_SERVER['REQUEST_METHOD'];
-    if($method == "OPTIONS") {
-      die();
-    }*/
-
-    $db = new DB('05cr8wjw5112.us-east-1.psdb.cloud', 'vpjfb2ewapce', 'pscale_pw_TZEawdCs7uZZc4OcMBJDVTQ7gdyy9ZHlZRqwCVEbc1U', 'invoice');
-
-    $q = $db->query('select * from usuarios where usuario = ? && password = ?', [
-      'usuario' => 'elnaufrago2009@gmail.com',
-      'password' => 'moiseslinar3s'
-    ]);
-    print_r($q->all());
-
-    //if ($q->count() == 1) {
-      /*$global = $db->query('select
+  public function login(Request $request, Response $response)
+  {    
+    try{
+    $res = $this->conn->query("
+      select * from usuarios 
+      where usuario = '{$request->toArray()['usuario']}' && password = '{$request->toArray()['password']}'");
+    //print_r($res);
+    if($res->num_rows == 1){
+      $res = $this->conn->query("select
         usuarios.nombres as usuario_nombres,
         usuarios.usuario as usuario_usuario,        
         roles.id as role_id,
@@ -44,25 +34,44 @@ class AuthController extends Controller
         empresas.direccion as empresa_direccion,
         empresas.ubigeo as empresa_ubigeo
         from usuarios
-             inner join roles on usuarios.role_id = roles.id
-             inner join empresas on usuarios.empresa_id = empresas.id
-        where usuario = ? && password = ? ', [
-        'usuario' => 'elnaufrago2009@gmail.com',
-        'password' => 'moiseslinar3s'
-      ]);*/
-      /*session_start();
-      $_SESSION["usuario_nombres"] = $global->first()->usuario_nombres;
-      $_SESSION["usuario_usuario"] = $global->first()->usuario_usuario;
-      $_SESSION["role_id"] = $global->first()->role_id;
-      $_SESSION["role_nombre"] = $global->first()->role_nombre;
-      $_SESSION["empresa_id"] = $global->first()->empresa_id;
-      $_SESSION["empresa_razon_social"] = $global->first()->empresa_razon_social;
-      $_SESSION["empresa_ruc"] = $global->first()->empresa_ruc;
-      $_SESSION["empresa_direccion"] = $global->first()->empresa_direccion;
-      $_SESSION["empresa_ubigeo"] = $global->first()->empresa_ubigeo;*/
-      //echo $global->first()->usuario_nombres;
-      //exit();
-    //}
-
+            inner join roles on usuarios.role_id = roles.id
+            inner join empresas on usuarios.empresa_id = empresas.id
+        where 
+          usuario = '{$request->toArray()['usuario']}' && 
+          password = '{$request->toArray()['password']}'");
+      if($res->num_rows == 1){
+        $res = $res->fetch_object();
+        session_start();
+        $_SESSION["usuario_nombres"] = $res->usuario_nombres;
+        $_SESSION["usuario_usuario"] = $res->usuario_usuario;
+        $_SESSION["role_id"] = $res->role_id;
+        $_SESSION["role_nombre"] = $res->role_nombre;
+        $_SESSION["empresa_id"] = $res->empresa_id;
+        $_SESSION["empresa_razon_social"] = $res->empresa_razon_social;
+        $_SESSION["empresa_ruc"] = $res->empresa_ruc;
+        $_SESSION["empresa_direccion"] = $res->empresa_direccion;
+        $_SESSION["empresa_ubigeo"] = $res->empresa_ubigeo;
+        return $this->resjson([
+          'success' => true
+        ]);
+        //print_r($request->toArray()['usuario']);
+        //print_r($res);        
+      }           
+      //print_r($res->usuario_usuario);
+      //return $res->usuario_usuario;
+    }else{
+      return $this->resjson(
+        [
+          'success' => false, 
+          'errors' => [
+             [ 'message' => 'Hubo un error en los datos.']             
+          ]
+        ]
+      );
+    }
+  }catch(Exception $e){
+    return $this->resjson(['success'=> false]);
+  }
+    
   }
 }

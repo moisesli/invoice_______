@@ -1,0 +1,8 @@
+POST http://invoice.com/api/login
+Content-Type: application/json
+
+{
+    "usuario": "elnaufrago2009@gmail.com",
+    "password": "moiseslinar3s"
+}
+

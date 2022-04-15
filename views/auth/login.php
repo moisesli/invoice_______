@@ -24,10 +24,15 @@
         <h2 class="text-2xl lg:text-3xl font-bold text-gray-700">
           Iniciar Session
         </h2>
+        <p>
+          <div v-for="error in errors">
+            <span class="text-red-500">{{error.message}}</span>
+          </div>
+        </p>
         <form class="mt-8 space-y-6" action="#">
           <div>
             <label_>Your email</label_>
-            <input_ type="email" placeholder="tucorreo@gmail.com" v-model="item.correo"/>
+            <input_ type="email" placeholder="tucorreo@gmail.com" v-model="item.usuario"/>
           </div>
           <div>
             <label_>Your password</label_>
@@ -57,15 +62,22 @@
     data() {
       return {
         item: {
-          correo: "elnaufrago2009@gmail.com",
+          usuario: "elnaufrago2009@gmail.com",
           password: "moiseslinar3s"
-        }
+        },
+        errors: {}
       }
     },
     methods: {
       async sendItem (){
         let result = await axios.post('./api/login', JSON.stringify(this.item));
-        console.log(result)
+        if(result.data.success === true){
+          window.location.href = "./documentos";
+          console.log('true')
+        }else{
+          this.errors = result.data.errors;
+          console.log(this.errors)
+        }        
       }
     }
   });
