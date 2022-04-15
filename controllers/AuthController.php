@@ -53,12 +53,8 @@ class AuthController extends Controller
         $_SESSION["empresa_ubigeo"] = $res->empresa_ubigeo;
         return $this->resjson([
           'success' => true
-        ]);
-        //print_r($request->toArray()['usuario']);
-        //print_r($res);        
-      }           
-      //print_r($res->usuario_usuario);
-      //return $res->usuario_usuario;
+        ]);        
+      }      
     }else{
       return $this->resjson(
         [
