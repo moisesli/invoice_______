@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 $router = new \Buki\Router\Router([
     'paths' => [
         'controllers' => __DIR__ . '/controllers',
-        'middlewares' => '/middlewares'
+        'middlewares' => __DIR__ . '/middlewares'
     ],
     'namespaces' => [
         'controllers' => 'Controllers',
@@ -35,8 +35,10 @@ $router->post('/api/registro','AuthController@index');
 $router->get('/registro', function (){ include './views/auth/registro.php'; });
 
 // Documentos
-$router->get('/documentos', function (){ include './views/documentos/index.php'; });
+$router->get('/documentos', 'DocumentosController@index', ['before' => 'CheckAuth']);
 
+// Productos
+$router->get('/productos', 'ProductosController@index', ['before' => 'CheckAuth']);
 
 $router->get('/radiouno','RadiounoController@index');
 
@@ -45,5 +47,9 @@ $router->get('/radiouno','RadiounoController@index');
 $router->get('/foo', 'FooController@index');
 // For auto discovering all methods and URIs
 //$router->controller('/users', 'UserController');
+
+
+// Logut
+$router->get('/logout', 'AuthController@logout');
 
 $router->run();

@@ -1,6 +1,6 @@
 <?php include './views/layouts/dashboard/header.php'; ?>
 
-<div class="m-3">
+  <div class="m-3">
   <nav class="flex mb-5" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-2">
       <li class="inline-flex items-center">
@@ -30,6 +30,7 @@
     </ol>
   </nav>
   <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">All products</h1>
+  <p><?php echo $_SESSION['role_nombre']  ?></p>
 </div>
 
 <!--
