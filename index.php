@@ -37,8 +37,10 @@ $router->get('/registro', function (){ include './views/auth/registro.php'; });
 // Documentos
 $router->get('/documentos', 'DocumentosController@index', ['before' => 'CheckAuth']);
 
+
 // Productos
 $router->get('/productos', 'ProductosController@index', ['before' => 'CheckAuth']);
+$router->post('/api/productos/list', 'ProductosController@list', ['before' => 'CheckAuth']);
 
 $router->get('/radiouno','RadiounoController@index');
 

@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'f099caaf76d628445df88781d519aaa9ae8c9dee',
+        'reference' => 'b25fa31fc2f41168382689ed57e4d44aef96e23d',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'f099caaf76d628445df88781d519aaa9ae8c9dee',
+            'reference' => 'b25fa31fc2f41168382689ed57e4d44aef96e23d',
             'dev_requirement' => false,
         ),
         'async-aws/core' => array(

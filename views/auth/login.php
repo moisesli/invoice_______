@@ -72,6 +72,7 @@
     methods: {
       async sendItem (){
         let result = await axios.post('./api/login', JSON.stringify(this.item));
+        //console.log(this.item)
         if(result.data.success === true){
           window.location.href = "./documentos";
           console.log('true')

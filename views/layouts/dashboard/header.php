@@ -9,6 +9,8 @@
   <!-- Vue JS -->
   <script src="https://unpkg.com/vue@next"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <!-- Tailwind Css -->
   <script src="https://cdn.tailwindcss.com"></script>  
 
