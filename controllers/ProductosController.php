@@ -11,14 +11,12 @@ class ProductosController extends Controller {
     }
 
     public function list(){
-      $res = $this->conn->query("
-        select * from productos
-      ");
+      $res = $this->conn->query("select * from productos")->fetch_all(MYSQLI_ASSOC);
 
-      print_r($res->fetch_all());
-      /*return $this->resjson([
+      //print_r(json_encode($res,true));
+      return $this->resjson([
         'suceess' => true,
-        'items' => $res->fetch_object()
-      ]);*/
+        'items' => $res
+      ]);
     }
 }

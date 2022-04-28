@@ -13,7 +13,7 @@ class Controller
         $this->conn->ssl_set(
           NULL,
           NULL,
-          "/etc/ssl/cert.pem",
+          "./cert.pem",
           NULL,
           NULL
         );
