@@ -41,6 +41,16 @@ $router->get('/documentos', 'DocumentosController@index', ['before' => 'CheckAut
 // Productos
 $router->get('/productos', 'ProductosController@index', ['before' => 'CheckAuth']);
 $router->post('/api/productos/list', 'ProductosController@list', ['before' => 'CheckAuth']);
+$router->get(
+  '/productos/new',
+  'ProductosController@new',
+  ['before' => 'CheckAuth']
+);
+$router->get(
+  '/productos/edit',
+  'ProductosController@edit',
+  ['before' => 'CheckAuth']
+);
 
 $router->get('/radiouno','RadiounoController@index');
 

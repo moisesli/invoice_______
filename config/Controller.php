@@ -30,5 +30,12 @@ class Controller
         echo json_encode($data, JSON_PRETTY_PRINT);
         exit;
     }
+
+    public function view($url){
+      include './views/layouts/dashboard/header.php';
+      $url = explode(".",$url);
+      include './views/'.$url[0].'/'.$url[1].'.php';
+      include './views/layouts/dashboard/footer.php';
+    }
     
 }

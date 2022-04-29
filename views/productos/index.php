@@ -33,51 +33,70 @@
 
     <!-- Title -->
     <h1 class="text-xl sm:text-2xl mb-12 font-semibold text-gray-900">
-      Todos los Productos {{name}}
+      Todos los Productos
     </h1>
 
     <!-- Table -->
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-4xl mx-auto">
       <div class="flex flex-col">
+        <!-- Button New -->
+        <div class="flex justify-end">
+          <a href="/productos/new" class="px-2 py-2.5 bg-cyan-600 m-2 rounded-md text-white font-medium text-sm">
+            <i class="fa fa-plus px-1 font-bold"></i>
+            Nuevo Producto
+          </a>
+        </div>
         <div class="overflow-x-auto shadow-md sm:rounded-lg">
           <div class="inline-block min-w-full align-middle">
             <div class="overflow-hidden ">
               <table class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
                 <thead class="bg-gray-100 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" class="p-4">
-                    <div class="flex items-center">
-                      <input id="checkbox-all" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                      <label for="checkbox-all" class="sr-only">checkbox</label>
-                    </div>
+                  <th scope="col" class="py-3 px-6 text-xs font-medium text-left dark:text-gray-400">
+                    #
                   </th>
                   <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">
                     Producto Nombre
                   </th>
                   <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">
-                    Categoria
+                    Codigo
                   </th>
                   <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">
-                    Precio
+                    Subtotal
                   </th>
-                  <th scope="col" class="p-4">
-                    <span class="sr-only">Edit</span>
+                  <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">
+                    IGV
+                  </th>
+                  <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">
+                    Total
+                  </th>
+                  <th scope="col" class="py-3 px-6 text-xs font-medium text-left text-gray-700 uppercase dark:text-gray-400">
+                    Acciones
                   </th>
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" v-for="item in items">
-                  <td class="p-4 w-4">
-                    <div class="flex items-center">
-                      <input id="checkbox-table-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                      <label for="checkbox-table-1" class="sr-only">checkbox</label>
-                    </div>
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700" v-for="(item, index) in items">
+                  <td class="p-4 w-4 text-sm font-medium text-gray-900 dark:text-white">
+                    {{index+1}}
                   </td>
-                  <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">Apple Imac 27"</td>
-                  <td class="py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white">Desktop PC</td>
-                  <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">$1999</td>
-                  <td class="py-4 px-6 text-sm font-medium text-right whitespace-nowrap">
-                    <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                  <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ item.nombre }}
+                  </td>
+                  <td class="py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                    {{ item.codigo }}
+                  </td>
+                  <td class="py-4 px-6 text-sm font-medium text-right text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ item.precio_sin_igv }}
+                  </td>
+                  <td class="py-4 px-6 text-sm font-medium text-right text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ item.igv }}
+                  </td>
+                  <td class="py-4 px-6 text-sm font-medium text-right text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ item.precio_con_igv }}
+                  </td>
+                  <td class="py-2 px-6 text-sm font-medium whitespace-nowrap text-center">
+                    <i class="fa-solid fa-ellipsis-vertical text-xl text-gray-700 px-2 dark:text-white"></i>
                   </td>
                 </tr>
                 </tbody>
