@@ -14,6 +14,11 @@ class ProductosController extends Controller
     include './views/productos/index.php';
   }
 
+  public function store(Request $request){
+      $this->conn->query("insert into productsheader()");
+    print_r($request->toArray());
+  }
+
   public function list()
   {
     $res = $this->conn->query("

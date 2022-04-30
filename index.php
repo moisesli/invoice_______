@@ -51,6 +51,12 @@ $router->get(
   'ProductosController@edit',
   ['before' => 'CheckAuth']
 );
+$router->post(
+    '/api/productos/store',
+    'ProductosController@store',
+    ['before' => 'CheckAuth']
+);
+
 
 $router->get('/radiouno','RadiounoController@index');
 

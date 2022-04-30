@@ -110,7 +110,10 @@
     },
     methods: {
       sendItem: function (){
-        console.log(this.item)
+        axios.post('/api/productos/store',JSON.stringify(this.item)).then(res => {
+          console.log(res.data)
+        })
+        //console.log(this.item)
       }
     }
   })
