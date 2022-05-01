@@ -15,8 +15,11 @@ class ProductosController extends Controller
   }
 
   public function store(Request $request){
-      $this->conn->query("insert into productsheader()");
-    print_r($request->toArray());
+    $data = $request->toArray();
+    $this->conn->query("insert into productsheader (nombre, stock, unidad_id) values ('{$data['nombre']}',{$data['stock']},{$data['unidad']})");
+    return $this->resjson([
+      'suceess' => true,
+    ]);
   }
 
   public function list()
