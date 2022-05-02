@@ -58,6 +58,13 @@ $router->post(
 );
 
 
+// Unidades
+$router->post(
+  '/api/unidades/list',
+  'UnidadesController@list',
+  ['before' => 'CheckAuth']
+);
+
 $router->get('/radiouno','RadiounoController@index');
 
 // For basic GET URI by using a Controller class.

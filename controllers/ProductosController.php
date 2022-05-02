@@ -13,23 +13,33 @@ class ProductosController extends Controller
   {
     include './views/productos/index.php';
   }
+  
 
   public function store(Request $request){
-      /*$this->conn->query("insert into productsheader
-        (nombre,stock,unidad_id) values
-        ($request->toArray()['nombre'],$request->toArray()['stock'],$request->toArray()['unidad'])
-      ");*/
-    print_r($request->toArray()['nombre']);
+    //print_r($request->toArray()['nombre']);
+    $data = $request->toArray();
+    $this->conn->query("insert into productsheader (nombre, stock, unidad_id) values 
+    ('{$data['nombre']}',{$data['stock']},{$data['unidad_id']})");
+    // Last Id
+    $last_id = $this->conn->insert_id;
+    $this->conn->query("
+      insert into productos (codigo, precio_sin_igv, precio_con_igv, igv, unidad_id, productoheader_id, detalle) values
+      ('{$data['codigo']}', {$data['precio_sin_igv']}, {$data['precio_con_igv']}, {$data['igv']}, {$data['unidad_id']}, $last_id, '')
+    ");
+    return $this->resjson([
+      'success' => true,
+    ]);
   }
 
   public function list()
   {
     $res = $this->conn->query("
         select
+          productos.id as id,
           productos.codigo as codigo,
           productsheader.nombre as nombre,
           productos.detalle as detalle,
-          productos.precion_sin_igv as precio_sin_igv,
+          productos.precio_sin_igv as precio_sin_igv,
           productos.precio_con_igv as precio_con_igv,
           productos.igv as igv,
           unidades.codigo as ucodigo,
@@ -53,7 +63,7 @@ class ProductosController extends Controller
 
   public function edit()
   {
-
+    $this->view('productos.edit');
   }
 
   public function update()

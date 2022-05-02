@@ -96,7 +96,9 @@
                     {{ item.precio_con_igv }}
                   </td>
                   <td class="py-2 px-6 text-sm font-medium whitespace-nowrap text-center">
-                    <i class="fa-solid fa-ellipsis-vertical text-xl text-gray-700 px-2 dark:text-white"></i>
+                    <a :href="'/productos/edit/'+item.id">
+                      <i class="fa-solid fa-ellipsis-vertical text-xl text-gray-700 px-2 dark:text-white"></i>
+                    </a>
                   </td>
                 </tr>
                 </tbody>
@@ -118,15 +120,21 @@
         }
       },
       methods: {
-        loadItems(){
+        loadItems() {
           axios.post('./api/productos/list').then(res => {
-              this.items = res.data.items
-                console.log(res.data)
+            this.items = res.data.items
+            console.log(res.data)
+          })
+        },
+        loadUnidades() {
+          axios.post('./api/unidades/list').then(res => {
+            console.log(res.data)
           })
         }
       },
-      mounted(){
+      mounted() {
         this.loadItems();
+        this.loadUnidades();
       }
     });
     app.mount('#app');
