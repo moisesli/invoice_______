@@ -47,7 +47,7 @@ $router->get(
   ['before' => 'CheckAuth']
 );
 $router->get(
-  '/productos/edit',
+  '/productos/edit/:id',
   'ProductosController@edit',
   ['before' => 'CheckAuth']
 );

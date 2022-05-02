@@ -61,9 +61,11 @@ class ProductosController extends Controller
     $this->view('productos.new');
   }
 
-  public function edit()
+  public function edit(Request $request, $id)
   {
-    $this->view('productos.edit');
+    $idd = 'moises';
+    include './views/productos/edit.php';
+    //$this->view('productos.edit');
   }
 
   public function update()
