@@ -7,7 +7,7 @@
                     <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20"
                          xmlns="http://www.w3.org/2000/svg">
                         <path
-                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
                     Home
                 </a>
@@ -87,54 +87,55 @@
             </div>
             <!-- Button Guardar -->
             <div class="flex justify-end mt-8">
-                <button_ color="cyan" @click="cancelItem()" class="mr-4"><i class="fa fa-xmark pr-1"></i> Cancelar</button_>
+                <button_ color="cyan" @click="cancelItem()" class="mr-4"><i class="fa fa-xmark pr-1"></i> Cancelar
+                </button_>
                 <button_ color="cyan" @click="sendItem()"><i class="fa fa-save pr-1"></i> Guardar</button_>
             </div>
         </div>
     </div>
 </div>
 <script type="application/javascript">
-  const {createApp} = Vue;
-  const app = createApp({
-    data() {
-      return {
-        item: {
-          nombre: "Arroz Costenio Graneadito 1 Kg",
-          codigo: "ARRZDF",
-          stock: "234",
-          unidad_id: "1",
-          precio_sin_igv: "3.56",
-          igv: "0.60",
-          precio_con_igv: "4.20"
+    const {createApp} = Vue;
+    const app = createApp({
+        data() {
+            return {
+                item: {
+                    nombre: "Arroz Costenio Graneadito 1 Kg",
+                    codigo: "ARRZDF",
+                    stock: "234",
+                    unidad_id: "1",
+                    precio_sin_igv: "3.56",
+                    igv: "0.60",
+                    precio_con_igv: "4.20"
+                },
+                unidades: []
+            }
         },
-        unidades: []
-      }
-    },
-    methods: {
-      sendItem: function () {
-        axios.post('/api/productos/store', JSON.stringify(this.item)).then(res => {
-          if (res.data.success == true) {
-            window.location.href = "/productos";
-          }
-          console.log(res.data)
-        })
-        //console.log(this.item)
-      },
-      cancelItem: function (){
-        window.location.href = "/productos";
-      },
-      loadUnidades(){
-        axios.post('/api/unidades/list').then(res => {
-          this.unidades = res.data.unidades;
-        })
-      }
-    },
-    mounted(){
-      this.loadUnidades();
-    }
-  })
-  app.component('input_', {
-    template: `
+        methods: {
+            sendItem: function () {
+                axios.post('/api/productos/store', JSON.stringify(this.item)).then(res => {
+                    if (res.data.success == true) {
+                        window.location.href = "/productos";
+                    }
+                    console.log(res.data)
+                })
+                //console.log(this.item)
+            },
+            cancelItem: function () {
+                window.location.href = "/productos";
+            },
+            loadUnidades() {
+                axios.post('/api/unidades/list').then(res => {
+                    this.unidades = res.data.unidades;
+                })
+            }
+        },
+        mounted() {
+            this.loadUnidades();
+        }
+    })
+    app.component('input_', {
+        template: `
       <input
         :type="type"
         :value="modelValue"
@@ -147,25 +148,25 @@
           focus:outline-none focus:border-cyan-600 focus:ring-cyan-600 focus:ring-2
           block w-full p-2.5"
         :placeholder="placeholder" />`,
-    props: {
-      type: String,
-      placeholder: String,
-      modelValue: String
-    }
-  });
-  app.component('label_', {
-    template: `<label class="text-xs font-medium text-gray-400 block mb-1"><slot></slot></label>`,
-  });
-  app.component('button_', {
-    template: `<button type="button"
+        props: {
+            type: String,
+            placeholder: String,
+            modelValue: String
+        }
+    });
+    app.component('label_', {
+        template: `<label class="text-xs font-medium text-gray-400 block mb-1"><slot></slot></label>`,
+    });
+    app.component('button_', {
+        template: `<button type="button"
       :class="[
           this.color == 'cyan' ? 'text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center' : ''
       ]"
       :disabled="disabled"><slot></slot></button>`,
-    props: {
-      color: String,
-      disabled: Boolean
-    }
-  });
-  app.mount('#app');
+        props: {
+            color: String,
+            disabled: Boolean
+        }
+    });
+    app.mount('#app');
 </script>

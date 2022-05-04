@@ -19,8 +19,8 @@ class Controller
         );
         $this->conn->real_connect(
           '05cr8wjw5112.us-east-1.psdb.cloud',
-          'bmxvl9e5244n',
-          'pscale_pw_bMz3roGl-KFxp5611iSBfeZgYGWZhYauUQAj3dzcCJI',
+          '2znbpudm9tj7',
+          'pscale_pw_-b7q8hly1wp0k8kz_eJ_TwLdKQh8IExKmYv3kPvzXPo',
           'invoice'
         );
     }
@@ -36,6 +36,14 @@ class Controller
       $url = explode(".",$url);
       include './views/'.$url[0].'/'.$url[1].'.php';
       include './views/layouts/dashboard/footer.php';
+    }
+
+    public function header(){
+        return include './views/layouts/dashboard/header.php';
+    }
+
+    public function footer(){
+        return include './views/layouts/dashboard/footer.php';
     }
     
 }

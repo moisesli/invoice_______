@@ -13,7 +13,30 @@ class ProductosController extends Controller
   {
     include './views/productos/index.php';
   }
-  
+
+  public function getid(Request $request, $id){
+      $res = $this->conn->query("
+        select
+        productos.id as id,
+        productos.unidad_id as unidad_id,
+        productos.codigo as codigo,
+        productsheader.nombre as nombre,
+        productos.detalle as detalle,
+        productos.precio_sin_igv as precio_sin_igv,
+        productos.precio_con_igv as precio_con_igv,
+        productos.igv as igv,
+        unidades.codigo as ucodigo,
+        productsheader.stock as stock
+        from productos
+        inner join productsheader on productos.productoheader_id = productsheader.id
+        inner join unidades on productos.unidad_id = unidades.id
+        where productos.id='$id'
+      ")->fetch_object();
+      return $this->resjson([
+          'success' => true,
+          'item' => $res
+      ]);
+  }
 
   public function store(Request $request){
     //print_r($request->toArray()['nombre']);
@@ -64,7 +87,9 @@ class ProductosController extends Controller
   public function edit(Request $request, $id)
   {
     $idd = 'moises';
+    $this->header();
     include './views/productos/edit.php';
+    $this->footer();
     //$this->view('productos.edit');
   }
 

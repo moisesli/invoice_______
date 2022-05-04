@@ -52,6 +52,11 @@ $router->get(
   ['before' => 'CheckAuth']
 );
 $router->post(
+    '/api/productos/getid/:id',
+    'ProductosController@getid',
+    ['before' => 'CheckAuth']
+);
+$router->post(
     '/api/productos/store',
     'ProductosController@store',
     ['before' => 'CheckAuth']
