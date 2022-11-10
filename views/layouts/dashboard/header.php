@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Get started with a free and open source Tailwind CSS admin dashboard featuring a sidebar layout, advanced charts, and hundreds of components based on Flowbite">  
+  <meta name="description" content="Get started with a free and open source Tailwind CSS admin dashboard featuring a sidebar layout, advanced charts, and hundreds of components based on Flowbite">
   <meta name="generator" content="Hugo 0.79.0">
   <title>Tailwind CSS Dashboard - Windster</title>
   <!-- Vue JS -->
@@ -12,13 +13,13 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!-- Tailwind Css -->
-  <script src="https://cdn.tailwindcss.com"></script>  
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 
-<body class="bg-gray-50">  
+<body class="bg-gray-50">
   <nav class="bg-white border-b border-gray-200 fixed z-30 w-full">
     <div class="px-3 py-3 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
@@ -115,7 +116,7 @@
                 </a>
               </li>
               <li>
-                <a href="/productos" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">                  
+                <a href="/productos" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <i class="ml-1 fas fa-user text-gray-500 text-lg"></i>
                   <span class="ml-4 flex-1 whitespace-nowrap">Productos</span>
                 </a>

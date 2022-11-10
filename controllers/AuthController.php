@@ -12,7 +12,8 @@ class AuthController extends Controller
 
   public function index()
   {
-    return 'registro';
+//      $this->view('auth.login');
+    require_once "./views/auth/login.php";
   }
 
   public function login(Request $request, Response $response)

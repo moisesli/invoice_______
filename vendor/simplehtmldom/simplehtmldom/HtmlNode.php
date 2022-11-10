@@ -286,23 +286,16 @@ class HtmlNode
 			$ret = $this->makeup();
 		}
 
-		if (isset($this->_[self::HDOM_INFO_INNER])) {
-			switch ($this->tag)
-			{
-				case HtmlElement::BR:
-					// todo: <br> should either never have self::HDOM_INFO_INNER or always
-					break;
-				case HtmlElement::isRawTextElement($this->tag):
-					$ret .= $this->_[self::HDOM_INFO_INNER];
-					break;
-				default:
-					if ($this->dom && $this->dom->targetCharset) {
-						$charset = $this->dom->targetCharset;
-					} else {
-						$charset = DEFAULT_TARGET_CHARSET;
-					}
-					$ret .= htmlentities($this->_[self::HDOM_INFO_INNER], ENT_QUOTES | ENT_SUBSTITUTE, $charset);
-					break;
+		if (isset($this->_[self::HDOM_INFO_INNER]) && $this->tag !== HtmlElement::BR) {
+			if (HtmlElement::isRawTextElement($this->tag)){
+				$ret .= $this->_[self::HDOM_INFO_INNER];
+			} else {
+				if ($this->dom && $this->dom->targetCharset) {
+					$charset = $this->dom->targetCharset;
+				} else {
+					$charset = DEFAULT_TARGET_CHARSET;
+				}
+				$ret .= htmlentities($this->_[self::HDOM_INFO_INNER], ENT_QUOTES | ENT_SUBSTITUTE, $charset);
 			}
 		}
 
@@ -353,6 +346,9 @@ class HtmlNode
 				}
 				break;
 		}
+
+		// Replace and collapse whitespace
+		$ret = preg_replace('/\s+/u', ' ', $ret);
 
 		// Reduce whitespace at start/end to a single (or none) space
 		$ret = preg_replace('/[ \t\n\r\0\x0B\xC2\xA0]+$/u', $trim ? '' : ' ', $ret);
@@ -1064,10 +1060,6 @@ class HtmlNode
 		if ($targetCharset === 'UTF-8') {
 			if (substr($converted_text, 0, 3) === "\xef\xbb\xbf") {
 				$converted_text = substr($converted_text, 3);
-			}
-
-			if (substr($converted_text, -3) === "\xef\xbb\xbf") {
-				$converted_text = substr($converted_text, 0, -3);
 			}
 		}
 

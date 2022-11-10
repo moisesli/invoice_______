@@ -1,8 +1,2 @@
-POST http://invoice.com/api/login
-Content-Type: application/json
-
-{
-    "usuario": "elnaufrago2009@gmail.com",
-    "password": "moiseslinar3s"
-}
-
+GET http://localhost:3000/
+Accept: application/json

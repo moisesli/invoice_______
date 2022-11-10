@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/vue@next"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <!-- https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css -->
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
 </head>
 
 <body class="bg-gray-50">
@@ -41,7 +41,7 @@
           </div>
           <div class="flex items-start">
             <div class="flex items-center h-5">
-              <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-5 w-4 rounded" required>
+              <input_ id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-5 w-4 rounded" required />
             </div>
             <div class="text-base ml-3">
               <label for="remember" class="font-medium text-gray-900">Recordarme</label>
@@ -49,9 +49,9 @@
             <a href="#" class="text-base text-teal-600 hover:underline ml-auto">Olvidaste tu Contrasenia?</a>
           </div>
           <button_ color="cyan" @click="sendItem">Iniciar Session</button_>
-          <!--<div class="text-sm font-medium text-gray-500">
-            Not registered? <a href="https://demo.themesberg.com/windster/authentication/sign-up/" class="text-teal-500 hover:underline">Create account</a>
-          </div>-->
+          <div class="text-sm font-medium text-gray-500">
+            No estas registrado? <a href="/registro" class="text-teal-500 hover:underline">Create una cuenta</a>
+          </div>
         </form>
       </div>
     </div>
@@ -83,40 +83,11 @@
       }
     }
   });
-  app.component('input_', {
-    template: `
-      <input
-        :type="type"
-        :value="modelValue"
-        @change="$emit('update:modelValue', $event.target.value)"
-        class="
-          bg-gray-50
-          border border-gray-300
-          text-gray-900 sm:text-base
-          rounded-lg
-          focus:outline-none focus:border-cyan-600 focus:ring-cyan-600 focus:ring-2
-          block w-full p-2.5"
-        :placeholder="placeholder" />`,
-    props: {
-      type: String,
-      placeholder: String,
-      modelValue: String
-    }
-  });
-  app.component('label_', {
-    template: `<label class="text-base font-medium text-gray-700 block mb-2"><slot></slot></label>`,
-  });
-  app.component('button_', {
-    template: `<button type="button"
-      :class="[
-          this.color == 'cyan' ? 'text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center' : ''
-      ]"
-      :disabled="disabled"><slot></slot></button>`,
-    props: {
-      color: String,
-      disabled: Boolean
-    }
-  });
+  
+  //components
+  <?php require_once "./views/components/input_.js"; ?>
+  <?php require_once "./views/components/label_.js"; ?>
+  <?php require_once "./views/components/button_.js"; ?>
   app.mount('#app');
 </script>
 </body>

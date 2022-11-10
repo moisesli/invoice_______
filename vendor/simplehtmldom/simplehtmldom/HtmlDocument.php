@@ -43,9 +43,6 @@ class HtmlDocument
 	protected $parent;
 	protected $noise = array();
 	protected $token_blank = " \t\r\n";
-	protected $token_equal = ' =/>';
-	protected $token_slash = " />\r\n\t";
-	protected $token_attr = ' >';
 
 	public $_charset = '';
 	public $_target_charset = '';
@@ -120,7 +117,7 @@ class HtmlDocument
 	{
 		if ($str) {
 			if (preg_match('/^http:\/\//i', $str) || strlen($str) <= PHP_MAXPATHLEN && is_file($str)) {
-				$this->load_file($str);
+				$this->loadFile($str);
 			} else {
 				$this->load(
 					$str,
@@ -137,7 +134,7 @@ class HtmlDocument
 		// Forcing tags to be closed implies that we don't trust the html, but
 		// it can lead to parsing errors if we SHOULD trust the html.
 		if (!$forceTagsClosed) {
-			$this->optional_closing_array = array();
+			$this->optional_closing_tags = array();
 		}
 
 		$this->_target_charset = $target_charset;
@@ -174,25 +171,6 @@ class HtmlDocument
 		// prepare
 		$this->prepare($str, $lowercase, $defaultBRText, $defaultSpanText);
 
-		if ($stripRN) {
-			// Temporarily remove any element that shouldn't lose whitespace
-			$this->remove_noise("'<\s*script[^>]*>(.*?)<\s*/\s*script\s*>'is");
-			$this->remove_noise("'<!\[CDATA\[(.*?)]]>'is");
-			$this->remove_noise("'<!--(?!>|->)(.*?)-->'is");
-			$this->remove_noise("'<\s*style[^>]*>(.*?)<\s*/\s*style\s*>'is");
-			$this->remove_noise("'<\s*code[^>]*>(.*?)<\s*/\s*code\s*>'is");
-
-			// Remove whitespace and newlines between tags
-			$this->doc = preg_replace('/>([\t\s]*[\r\n]^[\t\s]*)</m', '><', $this->doc);
-
-			// Remove whitespace and newlines in text
-			$this->doc = preg_replace('/([\t\s]*[\r\n]^[\t\s]*)/m', ' ', $this->doc);
-
-			// Restore temporarily removed elements and calculate new size
-			$this->doc = $this->restore_noise($this->doc);
-			$this->size = strlen($this->doc);
-		}
-
 		$this->remove_noise("'(<\?)(.*?)(\?>)'s", true); // server-side script
 		if (count($this->noise)) {
 			// phpcs:ignore Generic.Files.LineLength
@@ -210,7 +188,6 @@ class HtmlDocument
 		// end
 		$this->root->_[HtmlNode::HDOM_INFO_END] = $this->cursor;
 		$this->parse_charset();
-		$this->decode();
 		unset($this->doc);
 
 		// make load function chainable
@@ -255,8 +232,6 @@ class HtmlDocument
 		$defaultBRText = DEFAULT_BR_TEXT,
 		$defaultSpanText = DEFAULT_SPAN_TEXT)
 	{
-		$this->clear();
-
 		$this->doc = isset($str) ? trim($str) : '';
 		$this->size = strlen($this->doc);
 		$this->original_size = $this->size; // original size of the html
@@ -275,36 +250,6 @@ class HtmlDocument
 		if ($this->size > 0) { $this->char = $this->doc[0]; }
 	}
 
-	protected function decode()
-	{
-		foreach($this->nodes as $node) {
-			if (isset($node->_[HtmlNode::HDOM_INFO_TEXT])) {
-				$node->_[HtmlNode::HDOM_INFO_TEXT] = html_entity_decode(
-					$this->restore_noise($node->_[HtmlNode::HDOM_INFO_TEXT]),
-					ENT_QUOTES | ENT_HTML5,
-					$this->_target_charset
-				);
-			}
-			if (isset($node->_[HtmlNode::HDOM_INFO_INNER])) {
-				$node->_[HtmlNode::HDOM_INFO_INNER] = html_entity_decode(
-					$this->restore_noise($node->_[HtmlNode::HDOM_INFO_INNER]),
-					ENT_QUOTES | ENT_HTML5,
-					$this->_target_charset
-				);
-			}
-			if (isset($node->attr) && is_array($node->attr)) {
-				foreach($node->attr as $a => $v) {
-					if ($v === true) continue;
-					$node->attr[$a] = html_entity_decode(
-						$v,
-						ENT_QUOTES | ENT_HTML5,
-						$this->_target_charset
-					);
-				}
-			}
-		}
-	}
-
 	protected function parse($trim = false)
 	{
 		while (true) {
@@ -321,7 +266,11 @@ class HtmlDocument
 
 					$node = new HtmlNode($this);
 					++$this->cursor;
-					$node->_[HtmlNode::HDOM_INFO_TEXT] = $content;
+					$node->_[HtmlNode::HDOM_INFO_TEXT] = html_entity_decode(
+						$this->restore_noise($content),
+						ENT_QUOTES | ENT_HTML5,
+						$this->_target_charset
+					);
 					$this->link_nodes($node, false);
 
 				}
@@ -404,7 +353,13 @@ class HtmlDocument
 					// 'CP1251'/'ISO-8859-5' will be detected as
 					// 'CP1252'/'ISO-8859-1'. This will cause iconv to fail, in
 					// which case we can simply assume it is the other charset.
-					if (!@iconv('CP1252', 'UTF-8', $this->doc)) {
+					try {
+						if (!iconv('CP1252', 'UTF-8', $this->doc)){
+							$encoding = 'CP1251';
+						}
+					} catch (\Exception $e) {
+						$encoding = 'CP1251';
+					} /** TODO: Require PHP >=7.0 */ catch (\Throwable $t) {
 						$encoding = 'CP1251';
 					}
 				}
@@ -449,8 +404,9 @@ class HtmlDocument
 
 		$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 
-		if ($trim) { // "<   /html>"
-			$this->skip($this->token_blank);
+		if ($trim && strpos($this->token_blank, $this->char) !== false) { // "<   /html>"
+			$this->pos += strspn($this->doc, $this->token_blank, $this->pos);
+			$this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 		}
 
 		// End tag: https://dev.w3.org/html5/pf-summary/syntax.html#end-tags
@@ -458,10 +414,10 @@ class HtmlDocument
 			$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 
 			$tag = $this->copy_until_char('>');
-			$tag = $trim ? ltrim($tag, $this->token_blank) : $tag;
+			$tag = $trim ? trim($tag, $this->token_blank) : $tag;
 
 			// Skip attributes and whitespace in end tags
-			if ($trim && ($pos = strpos($tag, ' ')) !== false) {
+			if ($trim && $this->char !== '>' && ($pos = strpos($tag, ' ')) !== false) {
 				// phpcs:ignore Generic.Files.LineLength
 				Debug::log_once('Source document contains superfluous whitespace in end tags (</html   >).');
 				$tag = substr($tag, 0, $pos);
@@ -534,7 +490,7 @@ class HtmlDocument
 		$node->_[HtmlNode::HDOM_INFO_BEGIN] = $this->cursor++;
 
 		// Tag name
-		$tag = $this->copy_until($this->token_slash);
+		$tag = $this->copy_until(" />\r\n\t");
 
 		if (isset($tag[0]) && $tag[0] === '!') { // Doctype, CData, Comment
 			if (isset($tag[2]) && $tag[1] === '-' && $tag[2] === '-') { // Comment ("<!--")
@@ -672,7 +628,7 @@ class HtmlDocument
 			return true;
 		}
 
-		if (!preg_match('/^\w[\w:-]*$/', $tag)) { // Invalid tag name
+		if (!ctype_alnum(str_replace([':','-'], '', $tag))) { // Invalid tag name
 			$node->_[HtmlNode::HDOM_INFO_TEXT] = '<' . $tag . $this->copy_until('<>');
 
 			if ($this->char === '>') { // End tag
@@ -704,68 +660,70 @@ class HtmlDocument
 		// [0] Space between tag and first attribute
 		$space = array($this->copy_skip($this->token_blank), '', '');
 
-		do { // Parse attributes
-			$name = $this->copy_until($this->token_equal);
+		if ($this->char !== '/' && $this->char !== '>') {
+			do { // Parse attributes
+				$name = $this->copy_until(' =/>');
 
-			if ($name === '' && $this->char !== null && $space[0] === '') {
-				break;
-			}
+				if ($name === '' && $this->char !== null && $space[0] === '') {
+					break;
+				}
 
-			if ($guard === $this->pos) { // Escape infinite loop
-				$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
-				continue;
-			}
+				if ($guard === $this->pos) { // Escape infinite loop
+					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
+					continue;
+				}
 
-			$guard = $this->pos;
+				$guard = $this->pos;
 
-			if ($this->pos >= $this->size - 1 && $this->char !== '>') { // End Of File
-				Debug::log('Source document ended unexpectedly!');
-				$node->nodetype = HtmlNode::HDOM_TYPE_TEXT;
-				$node->_[HtmlNode::HDOM_INFO_END] = 0;
-				$node->_[HtmlNode::HDOM_INFO_TEXT] = '<' . $tag . $space[0] . $name;
-				$node->tag = 'text';
-				$this->link_nodes($node, false);
-				return true;
-			}
+				if ($this->pos >= $this->size - 1 && $this->char !== '>') { // End Of File
+					Debug::log('Source document ended unexpectedly!');
+					$node->nodetype = HtmlNode::HDOM_TYPE_TEXT;
+					$node->_[HtmlNode::HDOM_INFO_END] = 0;
+					$node->_[HtmlNode::HDOM_INFO_TEXT] = '<' . $tag . $space[0] . $name;
+					$node->tag = 'text';
+					$this->link_nodes($node, false);
+					return true;
+				}
 
-			if ($name === '/' || $name === '') { // No more attributes
-				break;
-			}
+				if ($name === '/' || $name === '') { // No more attributes
+					break;
+				}
 
-			// [1] Whitespace after attribute name
-			$space[1] = (strpos($this->token_blank, $this->char) === false) ? '' : $this->copy_skip($this->token_blank);
+				// [1] Whitespace after attribute name
+				$space[1] = (strpos($this->token_blank, $this->char) === false) ? '' : $this->copy_skip($this->token_blank);
 
-			$name = $this->restore_noise($name); // might be a noisy name
+				$name = $this->restore_noise($name); // might be a noisy name
 
-			if ($this->lowercase) {
-				$name = strtolower($name);
-			}
+				if ($this->lowercase) {
+					$name = strtolower($name);
+				}
 
-			if ($this->char === '=') { // Attribute with value
-				$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
-				$this->parse_attr($node, $name, $space, $trim); // get attribute value
-			} else { // Attribute without value
-				$node->_[HtmlNode::HDOM_INFO_QUOTE][$name] = HtmlNode::HDOM_QUOTE_NO;
-				$node->attr[$name] = true;
-				if ($this->char !== '>') {
-					$this->char = $this->doc[--$this->pos];
-				} // prev
-			}
+				if ($this->char === '=') { // Attribute with value
+					$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
+					$this->parse_attr($node, $name, $space, $trim); // get attribute value
+				} else { // Attribute without value
+					$node->_[HtmlNode::HDOM_INFO_QUOTE][$name] = HtmlNode::HDOM_QUOTE_NO;
+					$node->attr[$name] = true;
+					if ($this->char !== '>') {
+						$this->char = $this->doc[--$this->pos];
+					} // prev
+				}
 
-			// Space before attribute and around equal sign
-			if (!$trim && $space !== array(' ', '', '')) {
-				// phpcs:ignore Generic.Files.LineLength
-				Debug::log_once('Source document contains superfluous whitespace in attributes (<e    attribute  =  "value">). Enable trimming or fix attribute spacing for best performance.');
-				$node->_[HtmlNode::HDOM_INFO_SPACE][$name] = $space;
-			}
+				// Space before attribute and around equal sign
+				if (!$trim && $space !== array(' ', '', '')) {
+					// phpcs:ignore Generic.Files.LineLength
+					Debug::log_once('Source document contains superfluous whitespace in attributes (<e    attribute  =  "value">). Enable trimming or fix attribute spacing for best performance.');
+					$node->_[HtmlNode::HDOM_INFO_SPACE][$name] = $space;
+				}
 
-			// prepare for next attribute
-			$space = array(
-				((strpos($this->token_blank, $this->char) === false) ? '' : $this->copy_skip($this->token_blank)),
-				'',
-				''
-			);
-		} while ($this->char !== '>' && $this->char !== '/');
+				// prepare for next attribute
+				$space = array(
+					((strpos($this->token_blank, $this->char) === false) ? '' : $this->copy_skip($this->token_blank)),
+					'',
+					''
+				);
+			} while ($this->char !== '>' && $this->char !== '/');
+		}
 
 		$this->link_nodes($node, true);
 
@@ -790,46 +748,55 @@ class HtmlDocument
 				}
 			}
 			$node->_[HtmlNode::HDOM_INFO_END] = 0;
-		} elseif (!HtmlElement::isVoidElement($node->tag)) {
-			$innertext = $this->copy_until_char('<');
-			if ($innertext !== '') {
-				$node->_[HtmlNode::HDOM_INFO_INNER] = $innertext;
-			}
-			$this->parent = $node;
 		}
 
 		if ($node->tag === HtmlElement::BR) {
 			$node->_[HtmlNode::HDOM_INFO_INNER] = $this->default_br_text;
-		} elseif (HtmlElement::isRawTextElement($node->tag)) {
-			$data = '';
+		}
+
+		if (HtmlElement::isRawTextElement($node->tag)){
+			$node->_[HtmlNode::HDOM_INFO_INNER] = '';
 
 			// There is a rare chance of an empty element: "<e></e>",
 			// in which case the current char is the start of the end tag.
 			// But the script could also just contain tags: "<e><t></e>"
 			while(true) {
 				// Copy until first char of end tag
-				$data .= $this->copy_until_char('<');
+				$node->_[HtmlNode::HDOM_INFO_INNER] .= $this->copy_until_char('<');
 
 				// Look ahead in the document, maybe we are at the end
 				if (($this->pos + strlen("</$node->tag>")) > $this->size) { // End of document
 					Debug::log('Source document ended unexpectedly!');
 					break;
-				} elseif (substr($this->doc, $this->pos, strlen("</$node->tag")) === "</$node->tag") { // end
-					$this->skip('>'); // don't include the end tag
+				}
+
+				if (substr($this->doc, $this->pos, strlen("</$node->tag")) === "</$node->tag"){
 					break;
 				}
 
 				// Note: A script tag may contain any other tag except </script>
 				// which needs to be escaped as <\/script>
-
-				$data .= $this->char;
+				$node->_[HtmlNode::HDOM_INFO_INNER] .= $this->char;
 				$this->char = (++$this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
 			}
 
-			$node = new HtmlNode($this);
-			++$this->cursor;
-			$node->_[HtmlNode::HDOM_INFO_TEXT] = $data;
-			$this->link_nodes($node, false);
+			$this->parent = $node;
+		} elseif (!HtmlElement::isVoidElement($node->tag)) {
+			$innertext = $this->copy_until_char('<');
+
+			if ($trim){
+				$innertext = ltrim($innertext);
+			}
+
+			if ($innertext !== '') {
+				$node->_[HtmlNode::HDOM_INFO_INNER] = html_entity_decode(
+					$this->restore_noise($innertext),
+					ENT_QUOTES | ENT_HTML5,
+					$this->_target_charset
+				);
+			}
+
+			$this->parent = $node;
 		}
 
 		return true;
@@ -861,7 +828,7 @@ class HtmlDocument
 				// phpcs:ignore Generic.Files.LineLength
 				Debug::log_once('Source document contains attribute values without quotes (<e attribute=value>). Use double quotes for best performance');
 				$quote_type = HtmlNode::HDOM_QUOTE_NO;
-				$value = $this->copy_until($this->token_attr);
+				$value = $this->copy_until(' >');
 		}
 
 		$value = $this->restore_noise($value);
@@ -871,7 +838,7 @@ class HtmlDocument
 			// https://www.w3.org/TR/html/dom.html#text-content
 			// https://www.w3.org/TR/html/syntax.html#attribute-values
 			// https://www.w3.org/TR/xml/#AVNormalize
-			$value = preg_replace("/[\r\n\t\s]+/u", ' ', $value);
+			$value = str_replace(["\r","\n","\t"], ' ', $value);
 			$value = trim($value);
 		}
 
@@ -879,11 +846,15 @@ class HtmlDocument
 			if ($quote_type !== HtmlNode::HDOM_QUOTE_DOUBLE) {
 				$node->_[HtmlNode::HDOM_INFO_QUOTE][$name] = $quote_type;
 			}
-			$node->attr[$name] = $value;
+			$node->attr[$name] = html_entity_decode(
+				$value,
+				ENT_QUOTES | ENT_HTML5,
+				$this->_target_charset
+			);
 		}
 	}
 
-	protected function link_nodes(&$node, $is_child)
+	protected function link_nodes($node, $is_child)
 	{
 		$node->parent = $this->parent;
 		$this->parent->nodes[] = $node;
@@ -902,12 +873,6 @@ class HtmlDocument
 		return true;
 	}
 
-	protected function skip($chars)
-	{
-		$this->pos += strspn($this->doc, $chars, $this->pos);
-		$this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
-	}
-
 	protected function copy_skip($chars)
 	{
 		$pos = $this->pos;
@@ -924,21 +889,21 @@ class HtmlDocument
 		$len = strcspn($this->doc, $chars, $pos);
 		$this->pos += $len;
 		$this->char = ($this->pos < $this->size) ? $this->doc[$this->pos] : null; // next
+		if ($len === 0) { return ''; }
 		return substr($this->doc, $pos, $len);
 	}
 
 	protected function copy_until_char($char)
 	{
+		if ($this->char === $char) { return ''; }
 		if ($this->char === null) { return ''; }
 
 		if (($pos = strpos($this->doc, $char, $this->pos)) === false) {
-			$ret = substr($this->doc, $this->pos, $this->size - $this->pos);
+			$ret = substr($this->doc, $this->pos);
 			$this->char = null;
 			$this->pos = $this->size;
 			return $ret;
 		}
-
-		if ($pos === $this->pos) { return ''; }
 
 		$pos_old = $this->pos;
 		$this->char = $this->doc[$pos];

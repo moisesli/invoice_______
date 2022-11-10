@@ -5,9 +5,9 @@
         }
     },
     "require": {
-        "izniburak/router": "^2.5",
+        "izniburak/router": "^v2.5.2",
         "simplehtmldom/simplehtmldom": "dev-master",
-        "bref/bref": "^1.5",
-        "aws/aws-sdk-php": "^3.219"
+        "bref/bref": "^1.7.9",
+        "aws/aws-sdk-php": "^3.240.7"
     }
 }

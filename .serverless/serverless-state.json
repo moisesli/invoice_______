@@ -176,7 +176,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/invoice/dev/1649888203706-2022-04-13T22:16:43.706Z/invoice.zip"
+                "S3Key": "serverless/invoice/dev/1667688334270-2022-11-05T22:45:34.270Z/invoice.zip"
               },
               "Handler": "index.php",
               "Runtime": "provided.al2",
@@ -195,21 +195,21 @@
                 ]
               },
               "Layers": [
-                "arn:aws:lambda:us-east-1:209497400698:layer:php-80-fpm:33"
+                "arn:aws:lambda:us-east-1:209497400698:layer:php-81-fpm:33"
               ]
             },
             "DependsOn": [
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersiond3tcOc1uuz4GOMRvlHYDLQt2IRTUcFkWFfIiaYx0": {
+          "ApiLambdaVersionRCTPAerP3x8qHpejpb4l4ivY7mDYsNdLM9zz017bDUg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "w+Ksxn7cIowDX4ZsWZ9RSO92fFeLZP4+D/ffBjjrAgo="
+              "CodeSha256": "aPyxxFNyqqhPLNC43Sz4rl/BVL9iszKEcn0N+Tn3/oA="
             }
           },
           "HttpApi": {
@@ -279,8 +279,7 @@
               "IntegrationUri": {
                 "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
               },
-              "PayloadFormatVersion": "2.0",
-              "TimeoutInMillis": 28500
+              "PayloadFormatVersion": "2.0"
             }
           },
           "HttpApiRouteAny": {
@@ -338,7 +337,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersiond3tcOc1uuz4GOMRvlHYDLQt2IRTUcFkWFfIiaYx0"
+              "Ref": "ApiLambdaVersionRCTPAerP3x8qHpejpb4l4ivY7mDYsNdLM9zz017bDUg"
             },
             "Export": {
               "Name": "sls-invoice-dev-ApiLambdaFunctionQualifiedArn"
@@ -502,7 +501,7 @@
         "memory": 1024,
         "runtime": "provided.al2",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersiond3tcOc1uuz4GOMRvlHYDLQt2IRTUcFkWFfIiaYx0"
+        "versionLogicalId": "ApiLambdaVersionRCTPAerP3x8qHpejpb4l4ivY7mDYsNdLM9zz017bDUg"
       }
     },
     "configValidationMode": "warn",
@@ -525,14 +524,15 @@
         ],
         "artifactsS3KeyDirname": "serverless/invoice/dev/code-artifacts",
         "artifact": "/Users/moises/sites/invoice/.serverless/invoice.zip",
-        "artifactDirectoryName": "serverless/invoice/dev/1649888203706-2022-04-13T22:16:43.706Z"
+        "artifactDirectoryName": "serverless/invoice/dev/1667688334270-2022-11-05T22:45:34.270Z"
       }
     },
     "layers": {},
+    "isDashboardMonitoringPreconfigured": false,
     "artifact": "/Users/moises/sites/invoice/.serverless/invoice.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/invoice/dev/1649888203706-2022-04-13T22:16:43.706Z",
+    "artifactDirectoryName": "serverless/invoice/dev/1667688334270-2022-11-05T22:45:34.270Z",
     "artifact": "invoice.zip"
   }
 }
